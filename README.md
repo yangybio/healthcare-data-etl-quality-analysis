@@ -2,19 +2,19 @@
 
 ## Project Overview
 
-This project looks at patient financial responsibility using synthetic healthcare data.
+This project started from something I see in my daily work.
 
-I used the OHDSI Synthea-to-OMOP pipeline to transform the source data into OMOP CDM v5.4. After checking the transformed tables, I built an analysis dataset using standardized visit and cost data together with payer information.
+Before a patient's visit, insurance eligibility is already checked in Epic. Self-pay patients can also receive a cost estimate. But active insurance does not always mean the patient will have a low out-of-pocket cost.
 
-The analysis focuses on insured patients. I wanted to see whether payer and visit type can help identify visits that may have higher patient financial responsibility before the appointment.
+I wanted to see if payer and visit type can help identify insured patients who may still have higher financial responsibility before their visit.
+
+For the data work, I used the OHDSI Synthea-to-OMOP pipeline to transform synthetic healthcare data into OMOP CDM v5.4. I then checked the transformed data, built an analysis dataset, and analyzed patient financial responsibility across payer and visit-type groups.
 
 ## Business Question
 
 **Which payer and visit-type combinations are associated with higher estimated patient financial responsibility?**
 
-In my current work, insurance eligibility is already checked before the visit, and self-pay patients can receive a cost estimate.
-
-The gap I wanted to look at is insured patients who may still have a high out-of-pocket cost even when their insurance is active.
+I focused on insured visits rather than self-pay patients. The main question is whether some insured visits show enough financial-risk pattern that they may benefit from earlier cost information.
 
 ## Data & Tools
 
@@ -31,15 +31,25 @@ The gap I wanted to look at is insured patients who may still have a high out-of
 - Matplotlib - visualization
 - Google Colab - development environment
 
-## Workflow
+## Data Workflow
 
-1. Reviewed the raw Synthea tables and checked financial fields and key relationships.
-2. Ran the OHDSI SQLMesh pipeline to transform Synthea data into OMOP CDM v5.4.
-3. Checked the main OMOP visit and cost tables after the transformation.
-4. Combined OMOP visit and cost data with payer information from the staging layer.
-5. Built a final analysis dataset with 10,652 records.
-6. Compared patient financial responsibility across payer and visit-type groups.
-7. Used the 75th percentile ($446.10) as the high-responsibility threshold for insured visits.
+I first reviewed the source Synthea data and checked the financial fields and key relationships.
+
+Then I ran the OHDSI SQLMesh pipeline to transform the data into OMOP CDM v5.4. After the transformation, I checked the main OMOP tables and identified where the visit and financial fields needed for this analysis were stored.
+
+For the final dataset, I combined standardized visit and cost data with payer information from the staging layer.
+
+The final analysis dataset contains **10,652 visits** with no missing values in the payer, visit type, or financial fields used in the analysis.
+
+
+## Analysis
+
+I calculated estimated patient responsibility for each visit and focused on insured visits.
+
+The distribution was highly skewed. The median patient responsibility was **$84.96**, while the average was **$633.33**.
+
+I used the 75th percentile, **$446.10**, as the high-responsibility threshold. This is not an industry standard. I used it as a data-based cutoff to identify the higher-risk group in this dataset.
+
 
 ## Key Findings
 
